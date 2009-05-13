@@ -36,14 +36,11 @@
 		<cfset local.request.params["form"] = FORM />
 		<cfset local.request.params["request"] = REQUEST />
 
-		<cfset local.request["params"] = local.request.params />
-
 		<cfset local.request["url"] = IIf(cgi.https EQ "on", "'https'", "'http'") & "://"
 			& cgi.http_host & cgi.path_info & IIf(Len(cgi.query_string), "'?#cgi.query_string#'", "''") />
 		
 		<cfset local.session["key"] = IIf(StructKeyExists(SESSION, "sessionId"), "'#SESSION.sessionId#'", "''") />
 		<cfset local.session["data"] = SESSION />
-		<cfset local.session = local.session />
 		
 		<cfset local.body = {} />
 		<cfset local.body["api_key"] = arguments.apiKey />
@@ -80,7 +77,7 @@
 	
 	<cffunction name="configureJavaLoader" output="false" access="private">
 		<cfset var local = {} />
-		<cfset local.jars = [getDirectoryFromPath(getCurrentTemplatePath()) & "lib/SnakeYAML-1.2.jar"] />
+		<cfset local.jars = [GetDirectoryFromPath(GetCurrentTemplatePath()) & "lib/SnakeYAML-1.2.jar"] />
 		<cfset local.JavaLoader = CreateObject("component", "javaloader.JavaLoader").init(local.jars) />
 		<cfset setYaml(local.JavaLoader.create("org.yaml.snakeyaml.Yaml").init()) />
 	</cffunction>
