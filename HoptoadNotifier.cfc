@@ -1,7 +1,4 @@
-<cfcomponent output="false">
-	<cfset Hashtable  = CreateObject("java", "java.util.Hashtable") />
-	<cfset ArrayList = CreateObject("java", "java.util.ArrayList") />
-	
+<cfcomponent output="false">	
 	<cffunction name="init" output="false" access="public">
 		<cfargument name="apiKey" type="string" required="true" />
 		<cfset setApiKey(arguments.apiKey) />
@@ -35,27 +32,27 @@
 		<cfargument name="errorClass" type="string" default="" />
 		<cfset var local = {} />
 		
-		<cfset local.request.params["url"] = mapify(URL) />
-		<cfset local.request.params["form"] = mapify(FORM) />
-		<cfset local.request.params["request"] = mapify(REQUEST) />
+		<cfset local.request.params["url"] = URL />
+		<cfset local.request.params["form"] = FORM />
+		<cfset local.request.params["request"] = REQUEST />
 
-		<cfset local.request["params"] = mapify(local.request.params) />
+		<cfset local.request["params"] = local.request.params />
 
 		<cfset local.request["url"] = IIf(cgi.https EQ "on", "'https'", "'http'") & "://"
 			& cgi.http_host & cgi.path_info & IIf(Len(cgi.query_string), "'?#cgi.query_string#'", "''") />
 		
-		<cfset local.session["key"] = "" />
-		<cfset local.session["data"] = mapify(SESSION) />
-		<cfset local.session = mapify(local.session) />
+		<cfset local.session["key"] = IIf(StructKeyExists(SESSION, "sessionId"), "'#SESSION.sessionId#'", "''") />
+		<cfset local.session["data"] = SESSION />
+		<cfset local.session = local.session />
 		
 		<cfset local.body = {} />
 		<cfset local.body["api_key"] = arguments.apiKey />
 		<cfset local.body["error_class"] = arguments.errorClass />
 		<cfset local.body["error_message"] = arguments.message />
 		<cfset local.body["backtrace"] = arguments.trace />
-		<cfset local.body["request"] = mapify(local.request) />
-		<cfset local.body["session"] = mapify(local.session) />
-		<cfset local.body["environment"] = mapify(CGI) />
+		<cfset local.body["request"] = local.request />
+		<cfset local.body["session"] = local.session />
+		<cfset local.body["environment"] = CGI />
 		
 		<cfhttp method="post" url="http://hoptoadapp.com/notices/" timeout="2">
 			<cfhttpparam type="header" name="Accept" value="text/xml, application/xml" />
@@ -67,36 +64,25 @@
 	<cffunction name="createNotice" output="false" access="public">
 		<cfargument name="body" type="struct" required="true" />
 		<cfset var local = {} />
-		<cfset local.hash = Hashtable.init() />
-		<cfset local.hash.put("notice", mapify(arguments.body)) />
-		<cfset local.yaml = getYaml().dump(local.hash, "true") />
-		<cfset local.yaml = ReplaceNoCase(local.yaml, "!java.util.Hashtable", "", "all") />
-		<cfreturn local.yaml />
+		<cfset local.data["notice"] = arguments.body />
+		<cfreturn getYaml().dump(local.data) />
 	</cffunction>
 	
 	<cffunction name="createTrace" output="false" access="public">
 		<cfargument name="trace" type="array" required="true" />
 		<cfset var local = {} />
-		<cfset local.array = ArrayList.init() />
+		<cfset local.array = ArrayNew(1) />
 		<cfloop index="local.trace" array="#arguments.trace#">
-			<cfset local.array.add(local.trace.template & ":" & local.trace.line) />
+			<cfset ArrayAppend(local.array, local.trace.template & ":" & local.trace.line) />
 		</cfloop>
 		<cfreturn local.array />
 	</cffunction>
 	
 	<cffunction name="configureJavaLoader" output="false" access="private">
 		<cfset var local = {} />
-		<cfset local.jars = [getDirectoryFromPath(getCurrentTemplatePath()) & "lib/jyaml-1.3.jar"] />
+		<cfset local.jars = [getDirectoryFromPath(getCurrentTemplatePath()) & "lib/SnakeYAML-1.2.jar"] />
 		<cfset local.JavaLoader = CreateObject("component", "javaloader.JavaLoader").init(local.jars) />
-		<cfset setYaml(local.JavaLoader.create("org.ho.yaml.Yaml").init()) />
-	</cffunction>
-	
-	<cffunction name="mapify" output="false" access="public">
-		<cfargument name="struct" type="struct" required="true" />
-		<cfset var local = {} />
-		<cfset local.hash = Hashtable.init() />
-		<cfset local.hash.putAll(arguments.struct) />
-		<cfreturn local.hash />
+		<cfset setYaml(local.JavaLoader.create("org.yaml.snakeyaml.Yaml").init()) />
 	</cffunction>
 	
 	<cffunction name="getApiKey" output="false" access="public">
