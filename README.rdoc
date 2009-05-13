@@ -13,26 +13,24 @@ A simple ColdFusion CFC that sends errors and exceptions to Hoptoad
 
 The bug tracker is available here:
 
-  * http://github.com/shayne/coldfusion-hoptoad-notifier/issues
+* http://github.com/shayne/coldfusion-hoptoad-notifier/issues
 
 == SYNOPSIS:
 
-  #### Application.cfc
-  <cffunction name="onApplicationStart" ...>
+  ## Application.cfc
+  
+  <cffunction name="onApplicationStart">
     <cfset application.HoptoadNotifier = CreateObject("component", "path.to.HoptoadNotifier").init(API_KEY) />
   </cffunction>
   
-  ...
-  
-  <cffunction name="onError" ...>
-    <cfargument name="exception" ... />
+  <cffunction name="onError">
+    <cfargument name="exception" />
     <cfset application.HoptoadNotifier.exceptionHandler(arguments.exception) />
   </cffunction>
 
 == REQUIREMENTS:
 
 * ColdFusion 8+
-* Java 1.5+
 
 == LICENSE:
 
