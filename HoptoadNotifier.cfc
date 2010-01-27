@@ -71,7 +71,7 @@
 		<cfreturn iif(getUseSSL(), "variables.hoptoad_endpoint.secure", "variables.hoptoad_endpoint.default")>
 	</cffunction>
 
-	<cffunction name="notify" access="public" returntype="struct" output="no" hint="Send an error notification to Hoptoad">
+	<cffunction name="send" access="public" returntype="struct" output="no" hint="Send an error notification to Hoptoad">
 		<cfargument name="error" type="any" required="yes" hint="The error structure to notify Hoptoad about">
 		<cfargument name="session" type="struct" required="no" hint="Any additional session variables to report">
 		<cfargument name="params" type="struct" required="no" hint="Any additional request params to report">
@@ -206,7 +206,7 @@
 		<cfset var params = {}>
 		<cfif len(arguments.action)><cfset params.action = arguments.action></cfif>
 		<cfif len(arguments.controller)><cfset params.controller = arguments.controller></cfif>
-		<cfset this.notify(error=error, params=params)>
+		<cfset this.send(error=error, params=params)>
 	</cffunction>
 
 	<cffunction name="errorToStruct" access="private" returntype="struct" output="no" hint="Converts a CFCATCH to a proper structure (or just shallow-copies if it's already a structure)">

@@ -11,7 +11,7 @@ CF Hoptoad Notifier if a simple CFC for handling errors and exceptions from Cold
         </cffunction>
         <cffunction name="onError">
             <cfargument name="exception">
-            <cfset application.notifier.notify(arguments.exception)>
+            <cfset application.notifier.send(arguments.exception)>
         </cffunction>
     </cfcomponent>
 
