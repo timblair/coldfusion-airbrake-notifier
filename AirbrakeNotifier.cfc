@@ -1,12 +1,15 @@
 <!--- -->
-<fusedoc fuse="HoptoadNotifierV2.cfc" language="ColdFusion" specification="2.0">
+<fusedoc fuse="AirbrakeNotifier.cfc" language="ColdFusion" specification="2.0">
 	<responsibilities>
-		I am a
+		I am an error reporting component, used for sending errors to Airbrake.
 	</responsibilities>
 	<properties>
 		<note>
-			ColdFusion Hoptoad notifier, using V2 of the Hoptoad API
-			[http://help.hoptoadapp.com/faqs/api-2/notifier-api-v2]
+			ColdFusion Airbrake notifier, using V2.1 of the Airbrake API
+			[http://help.airbrakeapp.com/faqs/api-2/notifier-api-v2]
+
+			Airbrake was formally known as Hoptoad
+			[http://robots.thoughtbot.com/post/7665411707/hoptoad-is-now-airbrake]
 		</note>
 	</properties>
 </fusedoc>
@@ -16,15 +19,15 @@
 
 	<!--- notifier meta data --->
 	<cfset variables.meta = {
-		name    = "CF Hoptoad Notifier",
-		version = "2.0.0",
-		url     = "http://github.com/timblair/coldfusion-hoptoad-notifier"
+		name    = "CF Airbrake Notifier",
+		version = "3.0.0",
+		url     = "http://github.com/timblair/coldfusion-airbrake-notifier"
 	}>
 
 	<!--- secured and unsecured notifier endpoints --->
-	<cfset variables.hoptoad_endpoint = {
-		default = "http://hoptoadapp.com/notifier_api/v2/notices/",
-		secure  = "https://hoptoadapp.com/notifier_api/v2/notices/"
+	<cfset variables.airbrake_endpoint = {
+		default = "http://airbrakeapp.com/notifier_api/v2/notices/",
+		secure  = "https://airbrakeapp.com/notifier_api/v2/notices/"
 	}>
 
 	<!--- default instance variables --->
@@ -35,17 +38,17 @@
 	}>
 
 	<cffunction name="init" access="public" returntype="any" output="no" hint="Initialise the instance with the appropriate API key">
-		<cfargument name="api_key" type="string" required="yes" hint="The Hoptoad API key for the account to submit errors to">
-		<cfargument name="environment" type="string" required="no" default="production" hint="The enviroment name to report to Hoptoad">
-		<cfargument name="use_ssl" type="boolean" required="no" default="FALSE" hint="Should we use SSL when submitting to Hoptoad?">
+		<cfargument name="api_key" type="string" required="yes" hint="The Airbrake API key for the account to submit errors to">
+		<cfargument name="environment" type="string" required="no" default="production" hint="The enviroment name to report to Airbrake">
+		<cfargument name="use_ssl" type="boolean" required="no" default="FALSE" hint="Should we use SSL when submitting to Airbrake?">
 		<cfset setApiKey(arguments.api_key)>
 		<cfset setEnvironment(arguments.environment)>
 		<cfset setUseSSL(arguments.use_ssl)>
 		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="setApiKey" access="public" returntype="void" output="no" hint="Set the project API key to use when POSTing data to Hoptoad">
-		<cfargument name="api_key" type="string" required="yes" hint="The Hoptoad project's API key">
+	<cffunction name="setApiKey" access="public" returntype="void" output="no" hint="Set the project API key to use when POSTing data to Airbrake">
+		<cfargument name="api_key" type="string" required="yes" hint="The Airbrake project's API key">
 		<cfset variables.instance.api_key = arguments.api_key>
 	</cffunction>
 	<cffunction name="getApiKey" access="public" returntype="string" output="no" hint="The configured project API key">
@@ -60,7 +63,7 @@
 		<cfreturn variables.instance.environment>
 	</cffunction>
 
-	<cffunction name="setUseSSL" access="public" returntype="void" output="no" hint="Should we use SSL encryption when POSTing to Hoptoad?">
+	<cffunction name="setUseSSL" access="public" returntype="void" output="no" hint="Should we use SSL encryption when POSTing to Airbrake?">
 		<cfargument name="use_ssl" type="boolean" required="yes" hint="">
 		<cfset variables.instance.use_ssl = arguments.use_ssl>
 	</cffunction>
@@ -68,11 +71,11 @@
 		<cfreturn variables.instance.use_ssl>
 	</cffunction>
 	<cffunction name="getEndpointURL" access="public" returntype="string" output="no" hint="Get the endpoint URL to POST to">
-		<cfreturn iif(getUseSSL(), "variables.hoptoad_endpoint.secure", "variables.hoptoad_endpoint.default")>
+		<cfreturn iif(getUseSSL(), "variables.airbrake_endpoint.secure", "variables.airbrake_endpoint.default")>
 	</cffunction>
 
-	<cffunction name="send" access="public" returntype="struct" output="no" hint="Send an error notification to Hoptoad">
-		<cfargument name="error" type="any" required="yes" hint="The error structure to notify Hoptoad about">
+	<cffunction name="send" access="public" returntype="struct" output="no" hint="Send an error notification to Airbrake">
+		<cfargument name="error" type="any" required="yes" hint="The error structure to notify Airbrake about">
 		<cfargument name="session" type="struct" required="no" hint="Any additional session variables to report">
 		<cfargument name="params" type="struct" required="no" hint="Any additional request params to report">
 		<cfset var local = {}>
@@ -161,7 +164,7 @@
 		<cfset local.xml.append('</server-environment>')>
 		<cfset local.xml.append('</notice>')>
 
-		<!--- send the XML to Hoptoad --->
+		<!--- send the XML to Airbrake --->
 		<cfhttp method="post" url="#getEndpointURL()#" timeout="0" result="local.http">
 			<cfhttpparam type="header" name="Accept" value="text/xml, application/xml">
 			<cfhttpparam type="header" name="Content-type" value="text/xml">
@@ -199,7 +202,7 @@
 	</cffunction>
 
 	<cffunction name="exceptionHandler" access="public" returntype="void" output="no" hint="Backwards compatible façade for original CF notifier">
-		<cfargument name="exception" type="any" required="yes" hint="The exception to handle and send to Hoptoad">
+		<cfargument name="exception" type="any" required="yes" hint="The exception to handle and send to Airbrake">
 		<cfargument name="action" type="string" required="no" default="" hint="The action to report">
 		<cfargument name="controller" type="string" required="no" default="" hint="The controller to report">
 		<cfset var error = errorToStruct(arguments.exception)>
