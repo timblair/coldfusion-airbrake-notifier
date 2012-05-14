@@ -26,8 +26,8 @@
 
 	<!--- secured and unsecured notifier endpoints --->
 	<cfset variables.airbrake_endpoint = {
-		default = "http://airbrakeapp.com/notifier_api/v2/notices/",
-		secure  = "https://airbrakeapp.com/notifier_api/v2/notices/"
+		default = "http://api.airbrake.io/notifier_api/v2/notices/",
+		secure  = "https://api.airbrake.io/notifier_api/v2/notices/"
 	}>
 
 	<!--- default instance variables --->
