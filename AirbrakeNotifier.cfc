@@ -111,7 +111,7 @@
 		<cfset local.xml.append('</error>')>
 		<!--- overall request object --->
 		<cfset local.xml.append('<request>')>
-		<cfset local.xml.append('<url>' & getPageContext().getRequest().getRequestUrl() & iif(len(cgi.query_string), "'?#cgi.query_string#'", "''") & '</url>')>
+		<cfset local.xml.append('<url>' & xmlformat(getPageContext().getRequest().getRequestUrl() & iif(len(cgi.query_string), "'?#cgi.query_string#'", "''")) & '</url>')>
 		<cfif arraylen(local.backtrace) AND listlast(local.backtrace[1].file, ".") EQ "cfc">
 			<cfset local.component = reverse(listfirst(reverse(local.backtrace[1].file), "/"))>
 			<cfset local.xml.append('<component>#xmlformat(local.component)#</component>')>
