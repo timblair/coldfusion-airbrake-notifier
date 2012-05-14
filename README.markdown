@@ -1,6 +1,6 @@
 # ColdFusion Airbrake Notifier
 
-CF Airbrake Notifier if a simple CFC for handling errors and exceptions from ColdFusion and sending them to [Airbrake](http://www.airbrakeapp.com/); it uses v2.1 of the [Airbrake API](http://help.airbrakeapp.com/kb/api-2/notifier-api-version-21).  CF Airbrake Notifier requires ColdFusion 8+.
+CF Airbrake Notifier if a simple CFC for handling errors and exceptions from ColdFusion and sending them to [Airbrake](http://www.airbrakeapp.com/); it uses v2.2 of the [Airbrake API](http://help.airbrake.io/kb/api-2/notifier-api-version-22).  CF Airbrake Notifier requires ColdFusion 8+.
 
 ## Example Usage
 

@@ -5,8 +5,8 @@
 	</responsibilities>
 	<properties>
 		<note>
-			ColdFusion Airbrake notifier, using V2.1 of the Airbrake API
-			[http://help.airbrakeapp.com/faqs/api-2/notifier-api-v2]
+			ColdFusion Airbrake notifier, using V2.2 of the Airbrake API
+			[http://help.airbrake.io/kb/api-2/notifier-api-version-22]
 
 			Airbrake was formally known as Hoptoad
 			[http://robots.thoughtbot.com/post/7665411707/hoptoad-is-now-airbrake]
@@ -20,7 +20,7 @@
 	<!--- notifier meta data --->
 	<cfset variables.meta = {
 		name    = "CF Airbrake Notifier",
-		version = "3.0.0",
+		version = "3.1.0",
 		url     = "http://github.com/timblair/coldfusion-airbrake-notifier"
 	}>
 
@@ -113,7 +113,7 @@
 
 		<!--- build the XML packet to send (easier to use strings; more efficient to use string buffers) --->
 		<cfset local.xml = createobject("java", "java.lang.StringBuffer").init()>
-		<cfset local.xml.append('<?xml version="1.0" encoding="UTF-8"?><notice version="2.0">')>
+		<cfset local.xml.append('<?xml version="1.0" encoding="UTF-8"?><notice version="2.2">')>
 		<cfset local.xml.append('<api-key>#xmlformat(getApiKey())#</api-key>')>
 		<cfset local.xml.append('<notifier><name>#xmlformat(variables.meta.name)#</name><version>#xmlformat(variables.meta.version)#</version><url>#xmlformat(variables.meta.url)#</url></notifier>')>
 		<!--- error info and backtrace --->
