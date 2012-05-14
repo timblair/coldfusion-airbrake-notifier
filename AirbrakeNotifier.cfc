@@ -34,16 +34,19 @@
 	<cfset variables.instance = {
 		api_key     = "",
 		environment = "production",
-		use_ssl     = FALSE
+		use_ssl     = FALSE,
+		app_version = ""
 	}>
 
 	<cffunction name="init" access="public" returntype="any" output="no" hint="Initialise the instance with the appropriate API key">
 		<cfargument name="api_key" type="string" required="yes" hint="The Airbrake API key for the account to submit errors to">
 		<cfargument name="environment" type="string" required="no" default="production" hint="The enviroment name to report to Airbrake">
 		<cfargument name="use_ssl" type="boolean" required="no" default="FALSE" hint="Should we use SSL when submitting to Airbrake?">
+		<cfargument name="app_version" type="string" required="no" default="" hint="An optional application version number.  Errors older than the project's app version will be ignored.  Should follow http://semver.org/">
 		<cfset setApiKey(arguments.api_key)>
 		<cfset setEnvironment(arguments.environment)>
 		<cfset setUseSSL(arguments.use_ssl)>
+		<cfset setAppVersion(arguments.app_version)>
 		<cfreturn this>
 	</cffunction>
 
@@ -72,6 +75,14 @@
 	</cffunction>
 	<cffunction name="getEndpointURL" access="public" returntype="string" output="no" hint="Get the endpoint URL to POST to">
 		<cfreturn iif(getUseSSL(), "variables.airbrake_endpoint.secure", "variables.airbrake_endpoint.default")>
+	</cffunction>
+
+	<cffunction name="setAppVersion" access="public" returntype="void" output="no" hint="Sets the application version to report to Airbrake.">
+		<cfargument name="version" type="string" required="yes" hint="The application version">
+		<cfset variables.instance.app_version = arguments.version>
+	</cffunction>
+	<cffunction name="getAppVersion" access="public" returntype="string" output="no" hint="The application version.">
+		<cfreturn variables.instance.app_version>
 	</cffunction>
 
 	<cffunction name="send" access="public" returntype="struct" output="no" hint="Send an error notification to Airbrake">
@@ -161,6 +172,7 @@
 		<cfset local.xml.append('<server-environment>')>
 		<cfset local.xml.append('<project-root>#xmlformat(expandpath("."))#</project-root>')>
 		<cfset local.xml.append('<environment-name>#xmlformat(getEnvironment())#</environment-name>')>
+		<cfif len(getAppVersion())><cfset local.xml.append('<app-version>#xmlformat(getAppVersion())#</app-version>')></cfif>
 		<cfset local.xml.append('</server-environment>')>
 		<cfset local.xml.append('</notice>')>
 
