@@ -89,6 +89,14 @@
 		<cfargument name="error" type="any" required="yes" hint="The error structure to notify Airbrake about">
 		<cfargument name="session" type="struct" required="no" hint="Any additional session variables to report">
 		<cfargument name="params" type="struct" required="no" hint="Any additional request params to report">
+		<cfset local.request = build_request(argumentcollection=arguments)>
+		<cfreturn send_request(local.request)>
+	</cffunction>
+
+	<cffunction name="build_request" access="public" returntype="string" output="no" hint="Generates the XML request to be sent to Airbrake.">
+		<cfargument name="error" type="any" required="yes" hint="The error structure to notify Airbrake about">
+		<cfargument name="session" type="struct" required="no" hint="Any additional session variables to report">
+		<cfargument name="params" type="struct" required="no" hint="Any additional request params to report">
 		<cfset var local = {}>
 		<!--- we want to be dealing with a plain old structure here --->
 		<cfif NOT isstruct(arguments.error)><cfset arguments.error = errorToStruct(arguments.error)></cfif>
@@ -176,15 +184,20 @@
 		<cfset local.xml.append('</server-environment>')>
 		<cfset local.xml.append('</notice>')>
 
-		<!--- send the XML to Airbrake --->
+		<cfreturn local.xml.toString()>
+	</cffunction>
+
+	<cffunction name="send_request" access="private" returntype="struct" output="no" hint="Sends an exception to Airbrake.">
+		<cfargument name="xml" type="xml" required="yes" hint="The XML string to send to Airbrake.">
+		<cfset var local = { local.xml = arguments.xml.toString() }>
+
 		<cfhttp method="post" url="#getEndpointURL()#" timeout="0" result="local.http">
 			<cfhttpparam type="header" name="Accept" value="text/xml, application/xml">
 			<cfhttpparam type="header" name="Content-type" value="text/xml">
-			<cfhttpparam type="body" value="#local.xml.toString()#">
+			<cfhttpparam type="body" value="#local.xml#">
 		</cfhttp>
 
-		<!--- parse the returned XML back to a structure --->
-		<cfset local.ret = { endpoint = getEndpointURL(), request = local.xml.toString(), response = local.http, status = local.http.statusCode, id = 0, url = "" }>
+		<cfset local.ret = { endpoint = getEndpointURL(), request = local.xml, response = local.http, status = local.http.statusCode, id = 0, url = "" }>
 		<cfif isxml(local.http.filecontent)>
 			<cfset local.ret_xml = xmlparse(local.http.filecontent)>
 			<cfif structkeyexists(local.ret_xml, "notice")>
