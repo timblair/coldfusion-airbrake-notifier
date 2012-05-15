@@ -26,7 +26,7 @@
 <cftry><cfthrow message="ARGH!"><cfcatch><cfset e = cfcatch></cfcatch></cftry>
 
 <!--- grab the XSD file to validate against --->
-<cffile action="read" file="#expandpath('./test/airbrake_2_2.xsd')#" variable="xsd">
+<cffile action="read" file="#expandpath('./airbrake_2_2.xsd')#" variable="xsd">
 
 <!--- function for rendering the output of a test --->
 <cffunction name="renderTest" returntype="string" output="false">
@@ -53,7 +53,6 @@
 	<cfset structappend(local.eargs, arguments.args, FALSE)>
 	<cfset local.r = local.n.build_request(argumentcollection = local.eargs)>
 	<cfset local.res = local.n.send(argumentcollection = local.eargs)>
-	<cfdump var="#local.res#" abort="true">
 	<cfset local.v = xmlvalidate(local.r, xsd)>
 	<cfreturn renderTest(arguments.description, local.v)>
 </cffunction>
