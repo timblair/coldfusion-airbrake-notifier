@@ -189,7 +189,8 @@
 
 	<cffunction name="send_request" access="private" returntype="struct" output="no" hint="Sends an exception to Airbrake.">
 		<cfargument name="xml" type="xml" required="yes" hint="The XML string to send to Airbrake.">
-		<cfset var local = { local.xml = arguments.xml.toString() }>
+		<cfset var local = {}>
+		<cfset local.xml = arguments.xml.toString()>
 
 		<cfhttp method="post" url="#getEndpointURL()#" timeout="0" result="local.http">
 			<cfhttpparam type="header" name="Accept" value="text/xml, application/xml">

@@ -47,7 +47,8 @@
 	<cfargument name="exception" type="any" required="true">
 	<cfargument name="init" type="struct" required="false" default="#{}#">
 	<cfargument name="args" type="struct" required="false" default="#{}#">
-	<cfset var local = { eargs = { error = arguments.exception } }>
+	<cfset var local = {}>
+	<cfset local.eargs = { error = arguments.exception } >
 	<cfset arguments.init.api_key = "abc123">
 	<cfset local.n = createobject("component", "AirbrakeNotifier").init(argumentcollection=arguments.init)>
 	<cfset structappend(local.eargs, arguments.args, FALSE)>
